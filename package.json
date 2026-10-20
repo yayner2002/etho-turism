@@ -1,0 +1,26 @@
+{
+  "name": "ethio-tourism",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "images:generate": "node scripts/create-images.mjs",
+    "test:security": "node scripts/test-auth-security.mjs"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "lucide-react": "^1.59.0",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-leaflet": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.22",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2"
+  }
+}
