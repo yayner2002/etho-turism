@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyEmailToken } from "@/lib/email-verification";
 
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
 
 export async function POST(request) {
   let body;
