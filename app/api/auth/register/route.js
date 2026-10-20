@@ -18,7 +18,7 @@ export async function POST(request) {
 
   const password = typeof body?.password === "string" ? body.password : "";
 
-  // Validate registration fields.
+  // Validate registration fields on the server.
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (
@@ -38,7 +38,7 @@ export async function POST(request) {
     );
   }
 
-  // Prevent public registration using the configured admin email.
+  // Prevent public registration with the configured administrator email.
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 
   if (adminEmail && email === adminEmail) {
@@ -50,9 +50,11 @@ export async function POST(request) {
     );
   }
 
-  // Reject duplicate accounts.
+  // Check for an existing account.
   try {
-    if (getUserByEmail(email)) {
+    const existingUser = await getUserByEmail(email);
+
+    if (existingUser) {
       return NextResponse.json(
         {
           error: "An account with this email already exists. Please sign in.",
@@ -61,7 +63,7 @@ export async function POST(request) {
       );
     }
   } catch (error) {
-    console.error("Account lookup failed:", error);
+    console.error("Registration account lookup failed:", error);
 
     return NextResponse.json(
       {
@@ -74,25 +76,28 @@ export async function POST(request) {
   try {
     const passwordHash = await hashPassword(password);
 
-    // The store should assign the default customer role.
-    const user = createUser({
+    const user = await createUser({
       name,
       email,
       passwordHash,
     });
 
-    // Create a session using the project's shared auth helper.
+    if (!user || typeof user !== "object") {
+      throw new Error("Account creation returned no valid user.");
+    }
+
     await setSessionCookie(user);
 
     return NextResponse.json(
       {
-        message: "Account created successfully. You can now sign in.",
+        message: "Account created successfully.",
         user: publicUser(user),
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error("Registration failed:", error?.message || "Unknown error");
+    // Do not log passwords, cookies, or session tokens.
+    console.error("Registration failed:", error);
 
     return NextResponse.json(
       {
