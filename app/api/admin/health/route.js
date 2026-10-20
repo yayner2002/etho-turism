@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
 
 export async function GET() {
   const admin = await requireAdmin();
